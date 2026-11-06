@@ -1,0 +1,103 @@
+
+
+day -5 advanced cicd and infra Provisioning
+
+##jenkinsfile - with git integration and Testing
+```groovy
+pipeline {
+  agent any
+  stages {
+    stage('clone repo') {
+      steps {
+        git 'https://github.com/vaidikmaheshwari/dolfin.git'
+      }
+    }
+    stage('Build'){
+      steps{
+        echo 'Building project from git repository'
+      }
+    }
+    stage('Test'){
+      steps{
+        echo 'Running unit test'
+      }
+    }
+    stage('Deploy'){
+      steps{
+        echo 'Deploying application'
+      }
+    }
+  }
+}
+
+
+
+gitlab ci cd - with docker build
+stages:
+  - build
+  - push
+  - deploy
+build:
+ stage: build
+ script: 
+   - docker build -t dolphin .
+ 
+push:
+ stage: push
+ script: 
+   - docker push dolphin
+
+deploy: 
+ stage: deploy
+ script:
+   - kubectl apply -f kubernets/deployement.yaml
+
+
+
+ansible - create user and set permissions
+- name: create a new user
+  hosts: all
+  become: yes
+  tasks:
+    - name: create user
+      user: 
+        name: vaidikmaheshwari
+        state: present
+        shell: /bin/bash
+    - name: set permission for user
+      file:
+        path: /home/vaidikmaheshwari
+        owner: vaidikmaheshwari
+        group: vaidikmaheshwari
+        mode: '0755'
+      
+
+
+
+terraform - ec2 with tags and volume
+resource "aws_instance" "dolphinEc2" {
+   ami           = "random"
+   instance_type = "t2.medium"
+   tags = {
+     Name = "vaidik-server"
+   }
+   ebs_block_device {
+    device_name = "/dev/sdh"
+    volume_size = 50
+   }
+
+}
+
+
+Docker 
+#python application
+print("Hello Vaidik")
+
+#dockerfile
+FROM python:3.11
+WORKDIR /opt/vaidikmaheshwari/dolphin
+COPY app.py /opt/vaidikmaheshwari/dolphin
+CMD ["python", "/opt/vaidikmaheshwari/dolphin/app.py"]
+
+#real path
+/opt/vaidikmaheshwari/dolphin
